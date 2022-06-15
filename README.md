@@ -3,9 +3,9 @@ All cause mortality analysis for Portugal, analyzed 2022-06-15 with data from th
 
 By Dr. Rodrigo Quiroga (@rquiroga777 on Twitter)
 
-Departamento de Química Teórica y Computacional, Facultad de Ciencias Químicas, Universidad Nacional de Córdoba, ARGENTINA
+Assistant Professor at: Departamento de Química Teórica y Computacional, Facultad de Ciencias Químicas, Universidad Nacional de Córdoba, ARGENTINA
 
-INFIQC-CONICET
+Junior Researcher at: INFIQC-CONICET
 
 ORCID: https://orcid.org/0000-0001-5015-0531
 
