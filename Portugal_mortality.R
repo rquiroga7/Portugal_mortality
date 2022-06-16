@@ -152,16 +152,16 @@ ggplot(data=todo.df %>% filter(year %in% c("2020","2021","2022")),aes(x = Date, 
  scale_color_gradientn(colours = pal, limits = c(0,50),oob=squish) +
  ylab("Daily excess mortality")+
  xlab("Date")+
- ggtitle("Excess mortality - Portugal")+
+ ggtitle("Excess mortality and reported COVID deaths - Portugal")+
  scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month",expand=c(0,0))+
  scale_y_continuous(breaks=seq(-100,300,100),minor_breaks = NULL)+
- theme_light(base_size=22) +
+ theme_light(base_size=18) +
  theme(strip.background =element_rect(fill="gray"), strip.text = element_text(size=22,face="bold",colour = 'black'),legend.position = "none",axis.text.x = element_text(angle = 90,hjust = 0.5,vjust=0.35))+
  gghighlight::gghighlight(use_direct_label = FALSE,unhighlighted_colour = alpha("azure3", 0.3)) +
  facet_wrap(~year)+
  #geom_hline(yintercept = 0,colour="black")+
  geom_line(aes(y=covid_deaths),size=1,color="black")+
- labs(caption="Moving average (7 days) all-cause excess mortality, with respect to a baseline mortality model that adjusts for yearly and seasonal\ncomponents trained on 2009-2019 data.Data from: https://evm.min-saude.pt. Graph by Rodrigo Quiroga @rquiroga777 on Twitter.")
+ labs(caption="Moving average (7d) all-cause excess mortality in color, based on model with yearly and seasonal components\ntrained on 2009-2019 data. Reported covid deaths in black (smoothed deaths from OWID data). Data from: https://evm.min-saude.pt. Graph by Rodrigo Quiroga.")
 fname<-paste0(today,"_mortalidad_portugal_sinepred_20_21_22_covid_ENG.png");
 ggsave(fname, dpi = 600,type="cairo-png",width=15,height=10)
 
