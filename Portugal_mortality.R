@@ -44,7 +44,7 @@ ggplot(data=long %>% filter(year %notin% c("2009","2010")),aes(x = Date, y = ma(
  ylab("Daily mortality")+
  xlab("Date")+
  ggtitle("All cause daily mortality - Portugal")+
- scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month")+
+ scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month",expand=c(0,0))+
  scale_y_continuous(expand=c(0,0),breaks=seq(0,700,100))+
  coord_cartesian(ylim=c(200,750))+
  theme_light(base_size=18) +
@@ -63,7 +63,7 @@ ggplot(data=long4 %>% filter(year %notin% c("2009","2010")),aes(x = Date, y = ma
  ylab("Daily mortality")+
  xlab("Date")+
  ggtitle("All cause daily mortality and COVID reported deaths - Portugal")+
- scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month")+
+ scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month",expand=c(0,0))+
  coord_cartesian(ylim=c(0,750))+
 theme_light(base_size=18) +
  theme(,axis.text.x = element_text(angle = 90,hjust = 0.5,vjust=0.35),strip.background =element_rect(fill="gray"), strip.text = element_text(size=18,face="bold",colour = 'black'),legend.position = "none")+
@@ -86,7 +86,7 @@ model_sine2_yearly<-rlm(value ~ sin(2*pi*dia/365) + cos(2*pi*dia/365) + sin(4*pi
 
 #Predict expected daily deaths for the whole dataset
 predict.model_sine2_yearly<-predict(model_sine2_yearly, newdata=long3, type='response')
-todo.df<-data.frame(pred2=predict.model_sine2_yearly,diatotal=long3$diatotal,Date=long3$Date,year=long3$year,deaths=long3$value,prom=long2$value) %>% mutate(excess2=deaths-pred2)
+todo.df<-data.frame(pred2=predict.model_sine2_yearly,diatotal=long3$diatotal,Date=long3$Date,year=long3$year,deaths=long3$value,prom=long2$value,covid_deaths=long4$new_deaths_smoothed) %>% mutate(excess2=deaths-pred2)
 
 #EXPECTED AND ACTUAL DAILY MORTALITY FOR EACH YEAR
 ggplot(data=todo.df %>% filter(year %notin% c("2009","2010")),aes(x = Date, y = pred2,group=year))+
@@ -97,7 +97,7 @@ ggplot(data=todo.df %>% filter(year %notin% c("2009","2010")),aes(x = Date, y = 
  scale_y_continuous(expand = c(0,0))+
  xlab("Date")+
  ggtitle("Expected (modelled) daily all-cause mortality compared to daily actual deaths- Portugal")+
- scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month")+
+ scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month",expand=c(0,0))+
  theme_light(base_size=18) +
  theme(,axis.text.x = element_text(angle = 90,hjust = 0.5,vjust=0.35),strip.background =element_rect(fill="gray"), strip.text = element_text(size=18,face="bold",colour = 'black'),legend.position = "none")+
  gghighlight::gghighlight(use_direct_label = FALSE,n = 1,unhighlighted_colour = alpha("azure3", 0.3)) +
@@ -126,6 +126,8 @@ ggplot(data=todo.df %>% filter(year %notin% c("2009","2010")),aes(x = Date, y = 
 fname<-paste0(today,"_mortalidad_portugal_sinepred_ENG.png");
 ggsave(fname, dpi = 600,type="cairo-png",width=15,height=10)
 
+
+
 #ONLY 2021 + 2022
 ggplot(data=todo.df %>% filter(year %in% c("2021","2022")),aes(x = Date, y = ma(excess2),group=year))+
  geom_line(aes(color=ma(excess2)),size=1)+
@@ -142,6 +144,25 @@ ggplot(data=todo.df %>% filter(year %in% c("2021","2022")),aes(x = Date, y = ma(
  geom_hline(yintercept = 0,colour="black")+
  labs(caption="Moving average (7 days) all-cause excess mortality, with respect to a baseline mortality model that adjusts for yearly and seasonal components trained on 2009-2019 data.Data from: https://evm.min-saude.pt. Graph by Rodrigo Quiroga @rquiroga777 on Twitter.")
 fname<-paste0(today,"_mortalidad_portugal_sinepred_21_22_ENG.png");
+ggsave(fname, dpi = 600,type="cairo-png",width=15,height=10)
+
+#2020, 2021, 2022 + covid deaths
+ggplot(data=todo.df %>% filter(year %in% c("2020","2021","2022")),aes(x = Date, y = ma(excess2),group=year))+
+ geom_line(aes(color=ma(excess2)),size=1)+
+ scale_color_gradientn(colours = pal, limits = c(0,50),oob=squish) +
+ ylab("Daily excess mortality")+
+ xlab("Date")+
+ ggtitle("Excess mortality - Portugal")+
+ scale_x_date(date_labels = "%b",minor_breaks = NULL,date_breaks = "1 month",expand=c(0,0))+
+ scale_y_continuous(breaks=seq(-100,300,100),minor_breaks = NULL)+
+ theme_light(base_size=22) +
+ theme(strip.background =element_rect(fill="gray"), strip.text = element_text(size=22,face="bold",colour = 'black'),legend.position = "none",axis.text.x = element_text(angle = 90,hjust = 0.5,vjust=0.35))+
+ gghighlight::gghighlight(use_direct_label = FALSE,unhighlighted_colour = alpha("azure3", 0.3)) +
+ facet_wrap(~year)+
+ #geom_hline(yintercept = 0,colour="black")+
+ geom_line(aes(y=covid_deaths),size=1,color="black")+
+ labs(caption="Moving average (7 days) all-cause excess mortality, with respect to a baseline mortality model that adjusts for yearly and seasonal components trained on 2009-2019 data.Data from: https://evm.min-saude.pt. Graph by Rodrigo Quiroga @rquiroga777 on Twitter.")
+fname<-paste0(today,"_mortalidad_portugal_sinepred_20_21_22_covid_ENG.png");
 ggsave(fname, dpi = 600,type="cairo-png",width=15,height=10)
 
 
